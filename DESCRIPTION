@@ -1,0 +1,51 @@
+Package: LDAShiny
+Title: An R Package with Graphical User-Friendly Interface for Exploratory Review of Scientific Literature Based on a Bayesian Probabilistic Model and Machine Learning Tools
+Version: 0.9.0
+Authors@R: c(
+    person("Javier", "De La Hoz Maestre", email = "jdelahozmaestre@gmail.com",comment = c(ORCID = "0000-0001-7779-0803"), role = c("cre","aut")),
+    person("María José", "Fernández Gómez", email = "mjfg@usal.es", comment = c(ORCID = "0000-0002-5530-6416"), role = "aut"),
+    person("Susana", "Mendez", email = "Susana.mendes@ipleiria.pt", comment = c(ORCID = "0000-0001-9681-3169"), role = "aut"))
+Description: Contains the development of a tool that provides a web-based graphical
+    user interface (GUI) to perform a review of the scientific literature under the Bayesian
+    approach of latent Dirichlet allocation and machine learning algorithms. The application methodology 
+    is framed by the well known procedures in topic modelling on how to clean and process data.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+    beepr,
+    broom,
+    chinese.misc,
+    dplyr,
+    DT(>= 0.15),
+    highcharter,
+    htmlwidgets,
+    ldatuning,
+    parallel,
+    plotly,
+    purrr,
+    quanteda,
+    shiny,
+    shinyalert,
+    shinyBS,
+    shinycssloaders,
+    shinydashboard,
+    shinydashboardPlus,
+    shinyjs,
+    shinyWidgets,
+    SnowballC,
+    stringr,
+    textmineR,
+    tidyr,
+    tidytext,
+    topicmodels
+Suggests: 
+    knitr,
+    rmarkdown,
+    RColorBrewer,
+    Rmpfr,
+    scales,
+    tm
+VignetteBuilder: knitr
