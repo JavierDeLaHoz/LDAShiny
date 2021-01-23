@@ -348,9 +348,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Install and launch LDAshiny</h2>
 <p>To install the stable CRAN version</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;LDAShiny&quot;</span>)</span></code></pre></div>
+<p>and the development version is hosted on Github at</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;JavierDeLaHoz/LDAShiny&quot;</span>)</span></code></pre></div>
 <p>To launch <code>LDAShiny</code></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(LDAShiny)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>LDAShiny<span class="op">::</span><span class="kw">runLDAShiny</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(LDAShiny)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>LDAShiny<span class="op">::</span><span class="kw">runLDAShiny</span>()</span></code></pre></div>
 <p>Once launched the GUI show a menu that, from top to bottom, guides the user through the analysis (Video 1)</p>
 <center>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/m-BB-7Yh-NA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
@@ -382,10 +384,10 @@ Figure 2. Steps to export
 </p>
 </div>
 <p>The SCOPUS export tool creates an export file with the default name “scopus.csv”. <em>You can download the file (<code>O.niloticus.csv</code>) that contains the data for this example at (<a href="https://github.com/JavierDeLaHoz/o.niloticus/blob/main/O.niloticus.csv" class="uri">https://github.com/JavierDeLaHoz/o.niloticus/blob/main/O.niloticus.csv</a>)</em>. For CSV files, accented characters do not display correctly in Excel unless you save the file and then use Excel’s data import functionality to view the file. You can also use the following instruction from R to download the file and save it.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span> (readr)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>urlfile=<span class="st">&quot;https://raw.githubusercontent.com/JavierDeLaHoz/o.niloticus/main/O.niloticus.csv&quot;</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>O.niloticus &lt;-<span class="kw">read_csv</span>(<span class="kw">url</span>(urlfile))</span>
-<span id="cb3-4"><a href="#cb3-4"></a>O.niloticus &lt;-<span class="st"> </span><span class="kw">write.csv</span>(O.niloticus,<span class="dt">file=</span><span class="st">&quot;O.niloticus.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span> (readr)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>urlfile=<span class="st">&quot;https://raw.githubusercontent.com/JavierDeLaHoz/o.niloticus/main/O.niloticus.csv&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>O.niloticus &lt;-<span class="kw">read_csv</span>(<span class="kw">url</span>(urlfile))</span>
+<span id="cb4-4"><a href="#cb4-4"></a>O.niloticus &lt;-<span class="st"> </span><span class="kw">write.csv</span>(O.niloticus,<span class="dt">file=</span><span class="st">&quot;O.niloticus.csv&quot;</span>)</span></code></pre></div>
 </div>
 <div id="preprocessing" class="section level2">
 <h2>Preprocessing</h2>
@@ -465,7 +467,7 @@ Video 7: Download graphic results
 <h1>References</h1>
 <p>Arun R, Suresh V, Madhavan CV, Murthy MN (2010). On finding the natural number of topics with latent dirichlet allocation: Some observations. <em>In Pacific-Asia conference on knowledge discovery and data mining</em>, pp. 391-402. Springer.</p>
 <p>Blei DM, Ng AY, Jordan MI (2003). Latent Dirichlet allocation. <em>Journal of machine Learning research</em> , <strong>3</strong>(Jan), 993-1022.</p>
-<p>Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan McPherson. 2017. Shiny: Web Application Framework for R. <a href="https://cran.r-project.org/web/packages/" class="uri">https://cran.r-project.org/web/packages/</a> shiny/</p>
+<p>Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan McPherson. 2017. Shiny: Web Application Framework for R. <a href="https://CRAN.R-project.org/package=shiny" class="uri">https://CRAN.R-project.org/package=shiny</a></p>
 <p>Cao J, Xia T, Li J, Zhang Y, Tang S (2009). A density-based method for adaptive LDA model selection.<em>Neurocomputing</em>, <strong>72</strong>(7-9), 1775{1781.</p>
 <p>Deveaud R, SanJuan E, Bellot P (2014). Accurate and efective latent concept modeling for ad hoc information retrieval. <em>Document numerique</em>, <strong>17</strong>(1), 61{84.</p>
 <p>Grifths TL, Steyvers M (2004). Finding scientific topics. <em>Proceedings of the National academy of Sciences</em>, <strong>101</strong>(suppl 1), 5228-5235.</p>
