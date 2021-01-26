@@ -6,16 +6,18 @@
 #' from bigger zero to smaller one.
 #'@usage
 #'removeSparseTerms(x, sparse)
-#' @return term-document matrix where those terms from \code{x} are removed
+#' @return A term-document matrix where those terms from \code{x} are removed
 #' which have at least a sparse percentage of empty
 #' (i.e., terms occurring 0 times in a document) elements. I.e.,
 #' the resulting matrix contains only terms with a sparse factor
-#'  of less than \code{sparse}.
-#'@examples
-#' # data("crude")
-#' #library(tm)
-#' # tdm <- TermDocumentMatrix(crude)
-#' # removeSparseTerms(tdm, 0.3)
+#'  of less than \code{sparse}
+#'@examples \donttest{
+#' data("crude")
+#' require(tm)
+#' tdm <- TermDocumentMatrix(crude)
+#' removeSparseTerms(tdm, 0.3)
+#' }
+#'
 #'
 #' @export
 

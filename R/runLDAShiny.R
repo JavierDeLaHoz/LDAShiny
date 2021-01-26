@@ -8,14 +8,14 @@
 #' Otherwise, use a random port.
 #' @param host The IPv4 address that the application should listen on.
 #' Defaults to the shiny.host option, if set, or "127.0.0.1" if not.
+#' @return No return value,just start the GUI
 #' @examples
+#'if (interactive()) {
+#'runLDAShiny()
+#'}
 #'
-#' # runLDAShiny()
-#'
-#'
+
 #' @export
-
-
 runLDAShiny <- function(host = "127.0.0.1", port = NULL,launch.browser = TRUE) {
   appDir <- system.file("shinyLDA", package = "LDAShiny")
   if (appDir == "") {
