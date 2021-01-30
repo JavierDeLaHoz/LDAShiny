@@ -21,14 +21,13 @@ vignette: >
 
 To install the stable CRAN version
 ```{r, eval=FALSE}
-install.packages("LDAShiny")
+\dontrun{install.packages("LDAShiny")} 
 ```
 
 
 To launch `LDAShiny`
 ```{r, eval = FALSE}
-library(LDAShiny)
-LDAShiny::runLDAShiny()
+\dontrun{LDAShiny::runLDAShiny()}
 ```
 
 Once launched the GUI show a menu that, from top to bottom, guides the user through the analysis (Video 1)
@@ -69,7 +68,6 @@ knitr::include_graphics("../inst/img/Fig3.jpg")
 The SCOPUS export tool creates an export file with the default name “scopus.csv”. *You can download the file (`O.niloticus.csv`) that contains the data for this example at (https://github.com/JavierDeLaHoz/o.niloticus/blob/main/O.niloticus.csv)*. For CSV files, accented characters do not display correctly in Excel unless you save the file and then use Excel's data import functionality to view the file. You can also use the following instruction from R to download the file and save it.
 
 ```{r,eval=FALSE}
-library (readr)
 urlfile="https://raw.githubusercontent.com/JavierDeLaHoz/o.niloticus/main/O.niloticus.csv"
 O.niloticus <-read_csv(url(urlfile))
 O.niloticus <- write.csv(O.niloticus,file="O.niloticus.csv")
@@ -193,8 +191,7 @@ research* , **3**(Jan), 993-1022.
 
 
 Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan McPherson. 2017.
-Shiny: Web Application Framework for R. https://cran.r-project.org/web/packages/
-shiny/
+Shiny: Web Application Framework for R.https://CRAN.R-project.org/package=shiny
 
 
 Cao J, Xia T, Li J, Zhang Y, Tang S (2009). A density-based method for adaptive LDA

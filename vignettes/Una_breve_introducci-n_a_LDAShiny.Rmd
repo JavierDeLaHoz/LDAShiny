@@ -12,7 +12,7 @@ vignette: >
 !["LDAShiny"](../inst/img/LOGO1.png) 
 </center>
 
-# Introduction
+# Introducción
 
 `LDAShiny` es una aplicación web shiny (Chang *et al.* 2017) fácil de usar  para realizar revisiónes exploratoria de literatura científica, que implementa el modelo probabilístico Latent Dirichlet Allocation (LDA) (Blei, Ng y Jordan 2003). La motivación para crear LDAShiny fue optimizar el flujo de trabajo de rutina de LDA para que los usuarios que no estén familiarizados con R puedan realizar el análisis de forma interactiva en un navegador web.
 
@@ -22,15 +22,14 @@ vignette: >
 Para instalar la versión estable de la  CRAN 
 
 ```{r, eval=FALSE}
-install.packages("LDAShiny")
+\dontrun{install.packages("LDAShiny")}
 ```
 
 
 
 Para iniciar `LDAShiny`
 ```{r, eval = FALSE}
-library(LDAShiny)
-LDAShiny::runLDAShiny()
+\dontrun{LDAShiny::runLDAShiny()}
 ```
 
 Una vez lanzada la GUI se observaun menú que, de arriba a abajo, guía al usuario a través del análisis (Video 1) 
@@ -71,7 +70,6 @@ La herramienta de exportación SCOPUS crea un archivo de exportación con el nom
 
 
 ```{r,eval=FALSE}
-library (readr)
 urlfile="https://raw.githubusercontent.com/JavierDeLaHoz/o.niloticus/main/O.niloticus.csv"
 O.niloticus <-read_csv(url(urlfile))
 O.niloticus <- write.csv(O.niloticus,file="O.niloticus.csv")
@@ -196,16 +194,14 @@ research* , **3**(Jan), 993-1022.
 
 
 Chang, Winston, Joe Cheng, JJ Allaire, Yihui Xie, and Jonathan McPherson. 2017.
-Shiny: Web Application Framework for R. https://cran.r-project.org/web/packages/
-shiny/
+Shiny: Web Application Framework for R. https://CRAN.R-project.org/package=shiny
 
 
 Cao J, Xia T, Li J, Zhang Y, Tang S (2009). A density-based method for adaptive LDA
-model selection.*Neurocomputing*, **72**(7-9), 1775{1781.
+model selection.*Neurocomputing*, **72**(7-9), 1775-1781.
 
 
-Deveaud R, SanJuan E, Bellot P (2014). Accurate and efective latent concept modeling for
-ad hoc information retrieval. *Document numerique*, **17**(1), 61{84.
+Deveaud R, SanJuan E, Bellot P (2014). Accurate and efective latent concept modeling for ad hoc information retrieval. *Document numerique*, **17**(1), 61-84.
 
 
 Grifths TL, Steyvers M (2004). Finding scientific topics. *Proceedings of the National
