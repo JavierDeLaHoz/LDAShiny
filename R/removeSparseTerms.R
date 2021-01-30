@@ -1,6 +1,6 @@
 #' removeSparseTerms Remove Sparse Terms from a
 #' Term-Document Matrix function original pakage tm
-#'
+#'@importFrom tm TermDocumentMatrix
 #' @param x A \code{DocumentTermMatrix} or a \code{TermDocumentMatrix}
 #' @param sparse A numeric for the maximal allowed sparsity in the range
 #' from bigger zero to smaller one.
@@ -14,7 +14,7 @@
 #'@examples \donttest{
 #' data("crude")
 #' require(tm)
-#' tdm <- TermDocumentMatrix(crude)
+#' tdm <- tm::TermDocumentMatrix(crude)
 #' removeSparseTerms(tdm, 0.3)
 #' }
 #'
