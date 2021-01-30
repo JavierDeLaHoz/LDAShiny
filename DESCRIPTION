@@ -1,6 +1,6 @@
 Package: LDAShiny
 Title: User-Friendly Interface  for Review of Scientific Literature
-Version: 0.9.1
+Version: 0.9.2
 Authors@R: 
     c(person(given = "Javier",
              family = "De La Hoz Maestre",
@@ -57,6 +57,7 @@ Imports:
     textmineR,
     tidyr,
     tidytext,
+    tm,
     topicmodels
 Suggests: 
     knitr,
@@ -64,7 +65,7 @@ Suggests:
     rmarkdown,
     Rmpfr,
     scales,
-    tm
+    magrittr
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

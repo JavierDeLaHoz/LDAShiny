@@ -1,56 +1,8 @@
-## LDAShiny: A Shiny App for Exploratory Review of Scientific Literature
-if (!"beepr" %in% installed.packages()) install.packages("beepr")
-library(beepr)
-if (!"broom" %in% installed.packages()) install.packages("broom")
-library(broom)
-if (!"chinese.misc" %in% installed.packages()) install.packages("chinese.misc")
-library(chinese.misc)
-if (!"DT" %in% installed.packages()) install.packages("DT")
-library(DT)
-if (!"dplyr" %in% installed.packages()) install.packages("dplyr")
-library(dplyr)
-if (!"highcharter" %in% installed.packages()) install.packages("highcharter")
-library(highcharter)
-if (!"htmlwidgets" %in% installed.packages()) install.packages("htmlwidgets")
-library(htmlwidgets)
-if (!"ldatuning" %in% installed.packages()) install.packages("ldatuning")
-library(ldatuning)
-if (!"parallel" %in% installed.packages()) install.packages("parallel")
-library(parallel)
-if (!"plotly" %in% installed.packages()) install.packages("plotly")
-library(plotly)
-if (!"purrr" %in% installed.packages()) install.packages("purrr")
-library(purrr)
-if (!"quanteda" %in% installed.packages()) install.packages("quanteda")
-library(quanteda)
-if (!"shiny" %in% installed.packages()) install.packages("shiny")
-library(shiny)
-if (!"shinyalert" %in% installed.packages()) install.packages("")
-library(shinyalert)
-if (!"shinyBS" %in% installed.packages()) install.packages("shinyBS")
-library(shinyBS)
-if (!"shinycssloaders" %in% installed.packages()) install.packages("shinycssloaders")
-library(shinycssloaders)
-if (!"shinydashboard" %in% installed.packages()) install.packages("shinydashboard")
-library(shinydashboard)
-if (!"shinydashboardPlus" %in% installed.packages()) install.packages("shinydashboardPlus")
-library(shinydashboardPlus)
-if (!"shinyjs" %in% installed.packages()) install.packages("shinyjs")
-library(shinyjs)
-if (!"shinyWidgets" %in% installed.packages()) install.packages("shinyWidgets")
-library(shinyWidgets)
-if (!"SnowballC" %in% installed.packages()) install.packages("SnowballC")
-library(SnowballC)
-if (!"stringr" %in% installed.packages()) install.packages("stringr")
-library(stringr)
-if (!"textmineR" %in% installed.packages()) install.packages("textmineR")
-library(textmineR)
-if (!"tidytext" %in% installed.packages()) install.packages("tidytext")
-library(tidytext)
-if (!"topicmodels" %in% installed.packages()) install.packages("topicmodels")
-library(topicmodels)
+require(shinyWidgets)
+require (shinycssloaders)
 
 exp.stop <- c()
+
 shinydashboardPlus::dashboardPagePlus(skin ="blue",
 
     #dashboardHeader##########################
@@ -60,41 +12,41 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                                             rightSidebarIcon = "power-off"),
    #dashboardSidebar##########################
     shinydashboard::dashboardSidebar(width = 400,
-                                     shinydashboard::sidebarMenu(
-                                         menuItem("About LDAShiny",
-                                  tabName = "tab0"),
-                                  menuItem("Preprocessing",
-                                  tabName = "tab1",
-                                  icon = icon("filter")
+                    shinydashboard::sidebarMenu(
+                        shinydashboard::menuItem("About LDAShiny",
+                             tabName = "tab0"),
+                        shinydashboard::menuItem("Preprocessing",
+                              tabName = "tab1",
+                              icon = icon("filter")
                                   ),
-                                  menuItem("Document Term Matrix Visualizations",
-                                  tabName = "tab2",
-                                  icon = icon("chart-bar")
+                        shinydashboard::menuItem("Document Term Matrix Visualizations",
+                            tabName = "tab2",
+                            icon = icon("chart-bar")
                                   ),
-                                  menuItem("Number of topic (inference)",
-                                  tabName = "tab3",
-                                  icon = icon("calculator")
+                        shinydashboard::menuItem("Number of topic (inference)",
+                              tabName = "tab3",
+                              icon = icon("calculator")
                                   ),
-                                  menuItem("LDA model",
-                                  tabName = "tab4",
-                                  icon = icon("desktop"),
-                                  menuSubItem("Run model",
-                                              tabName = "tab41",
-                                              icon = icon("gear")
-                                              ),
-                                  menuSubItem("Download tabular results",
+                        shinydashboard::menuItem("LDA model",
+                              tabName = "tab4",
+                              icon = icon("desktop"),
+                              shinydashboard::menuSubItem("Run model",
+                                         tabName = "tab41",
+                                          icon = icon("gear")
+                                        ),
+                              shinydashboard::menuSubItem("Download tabular results",
                                               tabName = "tab42",
                                               icon = icon("download")
-                                              ),
-                                  menuSubItem("Download graphics results",
-                                              tabName = "tab43",
-                                              icon = icon("download")
-                                              )
+                                        ),
+                              shinydashboard::menuSubItem("Download graphics results",
+                                        tabName = "tab43",
+                                        icon = icon("download")
+                                        )
                                   ),
 
-                                  menuItem("Tutorial",
-                                  tabName = "tab5",
-                                  icon = icon("chalkboard-teacher")
+                        shinydashboard::menuItem("Tutorial",
+                             tabName = "tab5",
+                             icon = icon("chalkboard-teacher")
                                   )
                          )
                          ),
@@ -105,10 +57,10 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                   type = "text/css",
                   href = "custom.css")
         ),
-        useSweetAlert(),
-        tabItems(tabItem(
+        shinyWidgets::useSweetAlert(),
+        shinydashboard::tabItems(shinydashboard::tabItem(
             tabName = "tab1",
-            box(width = 400,
+            shinydashboard::box(width = 400,
                 title = "Preprocessing",
                 status = "primary",
                 solidHeader = TRUE,
@@ -120,7 +72,7 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                      helpText(h4("Example data")
                               ),
                     br(),
-                    prettyCheckbox(
+                   shinyWidgets::prettyCheckbox(
                         inputId = "example",
                         label = "Use example data set?",
                         value = FALSE,
@@ -129,7 +81,7 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                     br(),
                    br(),
                    fileInput("file","Choose CSV File",
-                             multiple = T), # fileinput() function is used to get the file upload contorl option
+                             multiple = T),
                     helpText("Select the read.table parameters below"),
                     shiny::checkboxInput(inputId = 'header',
                                          label = 'Header',
@@ -158,14 +110,18 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                         selectInput("column1", "Select id document",
                                     choices = NULL)
                         ), # no choices before uploading
-                    shinyBS::bsPopover("column1", "Select which column contains the id.",
-                               options = list(container = "body")),
+                    shinyBS::bsPopover("column1",
+                                       "Select which column contains the id.",
+                                       options = list(container = "body")
+                                       ),
                     div(style="display: inline-block;vertical-align:top; width: 170px;",
-                        selectInput("column2", "Select document vector",
+                        selectInput("column2",
+                                    "Select document vector",
                                     choices = NULL)
                         ), # no choices before uploading
 
-                     shinyBS::bsPopover("column2", "Select which column contains the column of text.",
+                     shinyBS::bsPopover("column2",
+                                        "Select which column contains the column of text.",
                               options = list(container = "body")
                               ),
 
@@ -175,7 +131,8 @@ shinydashboardPlus::dashboardPagePlus(skin ="blue",
                                     choices = NULL)
                         ), # no choices before uploading
 
-                    shinyBS::bsPopover("column3", "Select which column contains years",
+                    shinyBS::bsPopover("column3",
+                                       "Select which column contains years",
                                options = list(container = "body")
                                ),
 shinyWidgets::awesomeRadio(
@@ -189,7 +146,7 @@ shinyWidgets::awesomeRadio(
                                                   label = "Remove number",
                                                   value = TRUE,
                                                   status = "danger"),
-                     pickerInput(
+shinyWidgets::pickerInput(
                       inputId = "Language",
                       label = "Select language for stopword",
                       choices = c("da","nl","en", "fi",
@@ -213,10 +170,11 @@ shinyWidgets::awesomeRadio(
                                options = list(container = "body")),
                     br(),
                     div(style="display: inline-block;vertical-align:top; width: 170px;",
-                        awesomeCheckbox(inputId = "checkStemming",
+                        shinyWidgets::awesomeCheckbox(inputId = "checkStemming",
                                         label = "Stemming",
                                         value = FALSE,
-                                        status = "danger")),
+                                        status = "danger")
+                        ),
                     shinyBS::bsPopover("checkStemming", "Click if you want to stemming",
                               options = list(container = "body")),
                     div(style="display: inline-block;vertical-align:top; width: 200px;",
@@ -250,12 +208,12 @@ shinyWidgets::awesomeRadio(
                                    title = "dim DTM",
                                    trigger = "dTm",
                                    size="large",
-                             shinycssloaders:: withSpinner( DT :: dataTableOutput("Table_dim")
+                             shinycssloaders:: withSpinner(DT::DTOutput("Table_dim")
                                                             )
                              ),
 
-                   DT :: dataTableOutput ("table_display1"),
-                   DT :: dataTableOutput ("table_display2")
+DT::DTOutput ("table_display1"),
+DT::DTOutput ("table_display2")
 
 
                 ),
@@ -265,9 +223,9 @@ shinyWidgets::awesomeRadio(
                     ) # tab panel display
 )
 
-        ), tabItem(tabName = "tab2",
+        ), shinydashboard::tabItem(tabName = "tab2",
                    collapsible = TRUE,
-                   box(width = 350,
+                   shinydashboard::box(width = 350,
                        title = "Visualization",
                        status = "primary",
                        solidHeader = TRUE,
@@ -308,7 +266,7 @@ shinyWidgets::awesomeRadio(
                                       title = "Basic corpus statistics",
                                       trigger = "data",
                                       size="large",
-                               shinycssloaders:: withSpinner( DT :: dataTableOutput("data_b"))),
+                               shinycssloaders:: withSpinner(DT::DTOutput("data_b"))),
 
                        ## Shiny BS Modal to display the plot inside a modal
                        ## A spinner is also added
@@ -316,7 +274,7 @@ shinyWidgets::awesomeRadio(
                                div(style="display: inline-block;vertical-align:top; width: 120px;",
                                    tags$h5("Select number of term")),
                                div(style="display: inline-block;vertical-align:top; width: 120px;",
-                                   dropdown(sliderInput(inputId = "b",
+                                   shinyWidgets::dropdown(sliderInput(inputId = "b",
                                                         label = "Select number of word" ,
                                                         min = 10,
                                                         max = 500,
@@ -325,9 +283,9 @@ shinyWidgets::awesomeRadio(
                                         icon = icon("gear"),
                                         status = "danger",
                                         width = "500px",
-                                        animate = animateOptions(
-                                            enter = animations$fading_entrances$fadeInLeftBig,
-                                            exit = animations$fading_exits$fadeOutRightBig
+                                        animate = shinyWidgets::animateOptions(
+                                            enter = shinyWidgets::animations$fading_entrances$fadeInLeftBig,
+                                            exit = shinyWidgets::animations$fading_exits$fadeOutRightBig
                                         )
                                         )
                                    ),
@@ -341,7 +299,7 @@ shinyWidgets::awesomeRadio(
                                    tags$h5("Select number of term")
                                    ),
                                div(style="display: inline-block;vertical-align:top; width: 120px;",
-                                   dropdown(sliderInput(inputId = "c",
+                                   shinyWidgets::dropdown(sliderInput(inputId = "c",
                                                         label = "Select number of word",
                                                         min = 10,
                                                         max = 500,
@@ -350,19 +308,19 @@ shinyWidgets::awesomeRadio(
                                         icon = icon("gear"),
                                         status = "danger",
                                         width = "500px",
-                                        animate = animateOptions(
+                                        animate = shinyWidgets::animateOptions(
                                             enter = animations$fading_entrances$fadeInLeftBig,
                                             exit = animations$fading_exits$fadeOutRightBig ))),
                                shinycssloaders:: withSpinner(highcharter::highchartOutput("plot_gf")))
                    )
                    ),
-        tabItem(tabName = "tab3",
+shinydashboard::tabItem(tabName = "tab3",
                 width = 300,
-                box (title = "3. Number of topic",
+                shinydashboard::box (title = "3. Number of topic",
                      status = "primary",
                      solidHeader = TRUE,
                      collapsible = TRUE,
-                  tabBox(width = 300,
+                     shinydashboard::tabBox(width = 300,
                        title = "",
                        # The id lets us use input$tabset1 on the server to find the current tab
                        id = "tabset1",
@@ -428,7 +386,7 @@ shinyWidgets::awesomeRadio(
                                    options = list(container = "body")
                                    ),
                          br(),
-                         useShinyalert(),
+                         shinyalert::useShinyalert(),
                          div(id = "Run1",
                              style="display:inline-block",
                                shinyWidgets::actionBttn(inputId = "Run.model1",
@@ -474,7 +432,7 @@ shinyWidgets::awesomeRadio(
                                                            textOutput("OthK4metric"),
                                                     br(),
                                                     br(),
-                                    shinyWidgets ::awesomeRadio(
+                                     awesomeRadio(
                                                         inputId = "methods",
                                                         label = helpText(h3("Estimation method")),
                                                         choices = c("Gibbs","VEM"),
@@ -495,10 +453,10 @@ shinyWidgets::awesomeRadio(
                                                                         # style = "color: steelblue"))
                                                          #),
                                                          br(),
-                                        useShinyalert(),
+                                shinyalert::useShinyalert(),
                                                 div(id = "Run2",
                                                     style="display:inline-block",
-                                                             shinyWidgets::actionBttn(inputId = "Run.model2",
+                                                             actionBttn(inputId = "Run.model2",
                                                                                       label = "Run",
                                                                                       style = "float",
                                                                                       block = TRUE,
@@ -509,11 +467,11 @@ shinyWidgets::awesomeRadio(
                                                                         trigger = "Run2",
                                                                         size="large",
                                                                  verbatimTextOutput("timefourmetric"),
-                                                                 shinycssloaders:: withSpinner(highcharter::highchartOutput("plot_gj")))
+                                                                  withSpinner(highcharter::highchartOutput("plot_gj")))
                        )
                        ),
                        tabPanel("Perplexity",
-                                shiny::sidebarPanel(width = 300,
+                                sidebarPanel(width = 300,
                                                     helpText(h3("Candidate number of topics k")),
                                                 div(style="display: inline-block;vertical-align:top; width: 120px;",
                                                     numericInput(inputId = "num13",
@@ -559,9 +517,10 @@ shinyWidgets::awesomeRadio(
                                                  min = 3)
                                     ),
                                 br(),
-br(),useShinyalert(),
+br(),
+shinyalert::useShinyalert(),
                                  div(id = "Run3", style="display:inline-block",
-                                 shinyWidgets::actionBttn("Run.model3", "Run",
+                                 actionBttn("Run.model3", "Run",
                                                           style = "float",
                                                           block = TRUE,
                                                           color="primary")
@@ -571,12 +530,12 @@ br(),useShinyalert(),
                                                trigger = "Run3",
                                                size="large",
                                 verbatimTextOutput("timeloglike"),
-                                shinycssloaders:: withSpinner(highcharter::highchartOutput("plot_gk")))
+                                withSpinner(highcharter::highchartOutput("plot_gk")))
 
                        )
 ),
                       tabPanel("Harmonic mean",
-                               shiny::sidebarPanel(width = 300,
+                               sidebarPanel(width = 300,
                                                    helpText(h3("Candidate number of topics k")),
                                 div(style="display: inline-block;vertical-align:top; width: 120px;",
                                     numericInput("num19",
@@ -622,9 +581,9 @@ br(),useShinyalert(),
                                      ),
                                 br(),
 br(),
-useShinyalert(),
+shinyalert::useShinyalert(),
                                  div(id = "Run4", style="display:inline-block",
-                shinyWidgets::actionBttn("Run.model4",
+                actionBttn("Run.model4",
                                          "Run",
                                          style = "float",
                                          block = TRUE,
@@ -634,7 +593,7 @@ bsModalNoClose(id= "harmonic",
                title = "Harmonic mean",
                trigger = "Run4",
                size="large",verbatimTextOutput("timeHmean"),
-               shinycssloaders:: withSpinner(highcharter::highchartOutput("plot_gl")
+               withSpinner(highcharter::highchartOutput("plot_gl")
                                              )
                )
 )
@@ -643,13 +602,13 @@ bsModalNoClose(id= "harmonic",
 )
 ),
 
-          tabItem(tabName = "tab41",
-                  box(width = 400,
+shinydashboard::tabItem(tabName = "tab41",
+                        shinydashboard::box(width = 400,
                       title = "4. LDA model",
                       status = "primary",
                       solidHeader = TRUE,
                       collapsible = TRUE,
-                      shiny::sidebarPanel(width = 400,
+                      sidebarPanel(width = 400,
                                 helpText(h3("k parameter (topic) ")),
                                 div(style="display: inline-block;vertical-align:top; width: 120px;",
                                     numericInput("num25",
@@ -687,7 +646,7 @@ bsModalNoClose(id= "harmonic",
                                 br(),
                                 div(id = "Run5",
                                     style="display:inline-block",
-                                        shinyWidgets::actionBttn("Run.model5",
+                                        actionBttn("Run.model5",
                                                                  "Run LDA Model",
                                                                  style = "float",
                                                                  block = TRUE,
@@ -698,14 +657,14 @@ bsModalNoClose(id= "harmonic",
                                                trigger = "Run5",
                                                size="large",
                                         # verbatimTextOutput("r2"),
-                                        shinycssloaders:: withSpinner(DT :: dataTableOutput("sum")
+                                        withSpinner(DT::DTOutput("sum")
                                                                       )
                                         )
                                 )
                       )
                   ),
-        tabItem(tabName = "tab42",
-                box(width = 400,
+shinydashboard::tabItem(tabName = "tab42",
+                        shinydashboard::box(width = 400,
                     title = "Download tabular results",
                     status = "primary",
                     solidHeader = TRUE,
@@ -720,7 +679,7 @@ bsModalNoClose(id= "harmonic",
                                    title = "theta",
                                    trigger = "data_theta",
                                    size="large",
-                                   shinycssloaders:: withSpinner( DT :: dataTableOutput("theta")
+                                   shinycssloaders:: withSpinner(DT::DTOutput("theta")
                                                                   )
                                    ),
                     div(id = "data_phi",
@@ -734,7 +693,7 @@ bsModalNoClose(id= "harmonic",
                                    title = "phi",
                                    trigger = "data_phi",
                                    size="large",
-                            shinycssloaders:: withSpinner( DT :: dataTableOutput("phi")
+                            shinycssloaders:: withSpinner(DT::DTOutput("phi")
                                                            )
                             ),
                     div(id = "data_reg",
@@ -749,7 +708,7 @@ bsModalNoClose(id= "harmonic",
                                    title = "Regression summary",
                                    trigger = "data_reg",
                                    size="large",
-                                   shinycssloaders:: withSpinner( DT :: dataTableOutput("reg")
+                                   shinycssloaders:: withSpinner(DT::DTOutput("reg")
                                                                   )
                                    ),
                     div(id = "summ_LDA",
@@ -783,21 +742,22 @@ bsModalNoClose(id= "harmonic",
                                         max = 1,
                                         value = 0.05,
                                         step = 0.01),
-                            shinycssloaders:: withSpinner( DT :: dataTableOutput("summLDA")
-                                                           )),
+                            shinycssloaders:: withSpinner(DT::DTOutput("summLDA")
+                                                           )
+                            ),
 
                      div(id = "Allocat",style="display:inline-block",
                                         shinyWidgets::actionBttn("alloca",  "Allocation", icon=icon('table'),style = "float", block = TRUE,color="primary")),
 
                     bsModalNoClose(id="allocat", title = "Allocation of document to topics", trigger = "Allocat", size="large",
                             sliderInput(inputId = "topnumber", label = "top number" , min = 1  , max = 50, value = 1),
-                            shinycssloaders:: withSpinner( DT :: dataTableOutput("Alloca")
+                            shinycssloaders:: withSpinner(DT::DTOutput("Alloca")
                                                            )
                             )
                     )
                 ),
-        tabItem(tabName = "tab43",
-                box(width = 400,
+shinydashboard::tabItem(tabName = "tab43",
+                        shinydashboard::box(width = 400,
                     title = "Download graphics results",
                     status = "primary",
                     solidHeader = TRUE,
@@ -831,7 +791,7 @@ bsModalNoClose(id= "plotworcloud",
                size="large",
                div(style="display: inline-block;vertical-align:top; width: 120px;",tags$h5("Select options")),
                div(style="display: inline-block;vertical-align:top; width: 120px;",
-                                dropdown( numericInput("num29",
+                   shinyWidgets::dropdown( numericInput("num29",
                                                        label = "topic #",
                                                        value = 1,
                                                        min = 1),
@@ -844,7 +804,7 @@ bsModalNoClose(id= "plotworcloud",
                                 icon = icon("gear"),
                                 status = "danger",
                                 width = "500px",
-                                animate = animateOptions(
+                                animate = shinyWidgets::animateOptions(
                                 enter = animations$fading_entrances$fadeInLeftBig,
                                 exit = animations$fading_exits$fadeOutRightBig )
                             )
@@ -868,15 +828,15 @@ div(id = "heatmap",
                     )
 ),
 
-        tabItem(tabName = "tab0",
+shinydashboard::tabItem(tabName = "tab0",
                 shiny::fluidPage(tags$iframe(src = 'about.html',
                                              width = '100%',
                                              height = '1000px',
                                              frameborder = 0,
                                              scrolling = 'auto')
         )),
-        tabItem(tabName = "tab5",
-                shiny::fluidPage(tabBox(title = "",
+shinydashboard::tabItem(tabName = "tab5",
+                shiny::fluidPage(shinydashboard::tabBox(title = "",
                                         # The id lets us use input$tabset1 on the server to find the current tab
                                         id = "tabset1", height = "1000px",width = '100%',
                                         tabPanel("English", tags$iframe(src = 'A_brief_introduction_to_LDAShiny.html',
