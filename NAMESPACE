@@ -2,3 +2,6 @@
 
 export(removeSparseTerms)
 export(runLDAShiny)
+import(shiny)
+import(shinydashboard)
+importFrom(tm,TermDocumentMatrix)
