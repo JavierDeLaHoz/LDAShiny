@@ -7,7 +7,7 @@ output:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![](https://cranlogs.r-pkg.org/badges/grand-total/LDAShiny)]
+![](https://cranlogs.r-pkg.org/badges/grand-total/LDAShiny)
 
 badge_cran_date(LDAShiny)
 
