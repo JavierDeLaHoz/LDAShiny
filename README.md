@@ -9,7 +9,7 @@ output:
 
 ![](https://cranlogs.r-pkg.org/badges/grand-total/LDAShiny)
 
-`r badge_cran("badger", "orange")`
+`r badge_cran("LDAShiny", "orange")`
 # LDAShiny
 
 <!-- badges: start -->
