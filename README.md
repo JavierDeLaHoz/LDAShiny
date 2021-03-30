@@ -4,7 +4,7 @@ output:
   html_document: default
 ---
 
-https://cranlogs.r-pkg.org/badges/LDAShiny
+http://cranlogs.r-pkg.org/badges/grand-total/LDAShiny
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # LDAShiny
