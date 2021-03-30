@@ -3,9 +3,11 @@ output:
   pdf_document: default
   html_document: default
 ---
-/badges[http://cranlogs.r-pkg.org}]/{LDAShiny}[?color={blue}]
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+[![](https://cranlogs.r-pkg.org/badges/grand-total/LDAShiny)]
 
 # LDAShiny
 
