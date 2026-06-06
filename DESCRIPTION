@@ -1,0 +1,59 @@
+Package: LDAShiny
+Title: Interactive Topic Modeling and Bibliometric Analysis via Shiny
+Version: 1.0.0
+Authors@R: person("Javier", "De La Hoz-M",
+    email = "jdelahoz@unimagdalena.edu.co",
+    role  = c("aut", "cre"),
+    comment = c(ORCID = "0000-0001-7779-0803"))
+Description: Provides a 'Shiny' graphical interface for the complete workflow of
+    Latent Dirichlet Allocation (LDA) topic modelling on bibliometric data from
+    Scopus and Web of Science. Steps include data import and deduplication, text
+    preprocessing (stopword removal, stemming, n-grams, sparse-term filtering),
+    statistical inference to select the optimal number of topics via coherence,
+    final model training, and topic trend analysis over time using linear
+    regression. All results can be exported as Excel files, RDS objects, and
+    publication-quality plots.
+License: GPL-3
+URL: https://github.com/JavierDeLaHoz/LDAShiny
+Depends:
+    R (>= 4.1.0)
+Imports:
+    colourpicker,
+    config (>= 0.3.1),
+    dplyr,
+    DT,
+    ggplot2,
+    golem (>= 0.4.0),
+    Matrix,
+    openxlsx,
+    quanteda,
+    RColorBrewer,
+    readxl,
+    shiny (>= 1.7.0),
+    shinybusy,
+    shinydashboard,
+    shinyjs,
+    shinyWidgets,
+    slam,
+    SnowballC,
+    stopwords,
+    textmineR,
+    tibble,
+    tidyr,
+    tm,
+    wordcloud,
+    broom,
+    parallel,
+    stats,
+    utils,
+    grDevices
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+Config/testthat/edition: 3
+Language: en-US
+VignetteBuilder: knitr

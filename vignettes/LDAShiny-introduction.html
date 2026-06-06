@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Javier De La Hoz Maestre, María José Fernandez-Gomez, Susana Mendes" />
+
+<meta name="date" content="2026-06-06" />
+
+<title>Introduction to LDAShiny: Bibliometric Topic Modeling</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to LDAShiny: Bibliometric
+Topic Modeling</h1>
+<h4 class="author">Javier De La Hoz Maestre, María José Fernandez-Gomez,
+Susana Mendes</h4>
+<h4 class="date">2026-06-06</h4>
+
+
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>LDAShiny</strong> is an interactive R package built with the
+<a href="https://shiny.posit.co/">Shiny</a> framework and the <a href="https://thinkr-open.github.io/golem/">golem</a> architecture. It
+provides a complete, graphical workflow for <strong>Latent Dirichlet
+Allocation (LDA) topic modeling</strong> applied to bibliometric data
+exported from <a href="https://www.scopus.com/">Scopus</a> and <a href="https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/">Web
+of Science (WoS)</a>.</p>
+<p>The package was developed by the <strong>GEMC Research Group</strong>
+(Grupo de Estadística y Métodos Cuantitativos) at Universidad del
+Magdalena, Colombia.</p>
+<div id="citation" class="section level3">
+<h3>Citation</h3>
+<p>If you use LDAShiny in your research, please cite:</p>
+<blockquote>
+<p>De la Hoz-M., J.; Fernandez-Gomez, M. J.; Mendes, S. (2021).
+<em>LDAShiny: An R Package for Exploratory Review of Scientific
+Literature Based on a Bayesian Probabilistic Model and Machine Learning
+Tools.</em> Mathematics, 9(14), 1671. DOI: <a href="https://doi.org/10.3390/math9141671">10.3390/math9141671</a></p>
+</blockquote>
+<hr />
+</div>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>Install the development version from GitHub:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;your_user/LDAShiny&quot;</span>)</span></code></pre></div>
+<p>Or, once published on CRAN:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;LDAShiny&quot;</span>)</span></code></pre></div>
+<hr />
+</div>
+<div id="launching-the-application" class="section level2">
+<h2>Launching the Application</h2>
+<p>Start the interactive dashboard with a single call:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(LDAShiny)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">run_LDAShiny</span>()</span></code></pre></div>
+<p>By default, the application accepts file uploads up to <strong>500
+MB</strong>. You can adjust this limit:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">run_LDAShiny</span>(<span class="at">max_upload_mb =</span> <span class="dv">1000</span>)</span></code></pre></div>
+<p>The dashboard opens in your default web browser and presents five
+sequential modules in the left-hand sidebar, each building on the output
+of the previous one.</p>
+<hr />
+</div>
+<div id="workflow-overview" class="section level2">
+<h2>Workflow Overview</h2>
+<p>The full analysis pipeline consists of five modules:</p>
+<pre><code> ┌──────────────────────┐
+ │  1. Data Import       │  Upload Scopus CSV + WoS TXT → merged data.frame
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  2. Text Preprocessing│  Tokenise · Stopwords · Stemming · DTM
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  3. Inference (K)     │  Run LDA for k_min..k_max → coherence curve
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  4. Final LDA Model   │  Train model at optimal K → β, γ, word clouds
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  5. Trend Analysis    │  Linear regression of topic intensity over time
+ └──────────────────────┘</code></pre>
+<hr />
+</div>
+<div id="module-1-data-import" class="section level2">
+<h2>Module 1 — Data Import</h2>
+<div id="supported-formats" class="section level3">
+<h3>Supported formats</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Format</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Scopus</td>
+<td><code>.csv</code></td>
+<td>Standard Scopus export</td>
+</tr>
+<tr class="even">
+<td>Web of Science</td>
+<td><code>.txt</code></td>
+<td>Plain-text tagged format</td>
+</tr>
+<tr class="odd">
+<td>Integrated file</td>
+<td><code>.xlsx</code></td>
+<td>Previously exported merged dataset</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="how-to-use" class="section level3">
+<h3>How to use</h3>
+<ol style="list-style-type: decimal">
+<li>Select <strong>“Merge Scopus + Web of Science”</strong> from the
+action picker.</li>
+<li>Upload one or more Scopus CSV files and one or more WoS TXT
+files.</li>
+<li>Click <strong>“Process and Merge”</strong>.</li>
+</ol>
+<p>The module:</p>
+<ul>
+<li>Standardises column names across both sources (<code>doi</code>,
+<code>title</code>, <code>year</code>, <code>Journal</code>,
+<code>abstract</code>, <code>database</code>).</li>
+<li>Deduplicates records by DOI (case-insensitive). Records without a
+DOI are deduplicated by exact row content.</li>
+<li>Displays a summary table, a missing-values report, and a preview of
+the top 10 records.</li>
+<li>Allows customisable bar or lollipop charts of journal and year
+distributions, with full export control (PNG, TIFF, JPEG, PDF).</li>
+</ul>
+<p>The merged dataset can be downloaded as an <code>.xlsx</code> file
+for reuse via the <strong>Load Integrated Excel File</strong> option in
+future sessions.</p>
+</div>
+<div id="internal-helper-functions" class="section level3">
+<h3>Internal helper functions</h3>
+<p>Two internal functions handle the parsing and standardisation
+steps:</p>
+<ul>
+<li><p><code>parse_wos(path)</code> — reads a WoS plain-text export and
+returns a <code>data.frame</code> with columns <code>doi</code>,
+<code>title</code>, <code>year</code>, <code>Journal</code>,
+<code>abstract</code>, <code>database</code>. Missing fields
+(e.g. absent DOI) are set to <code>NA</code>.</p></li>
+<li><p><code>standardize_scopus(df)</code> — maps Scopus column names to
+the shared schema. Any missing column is filled with
+<code>NA</code>.</p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="module-2-text-preprocessing" class="section level2">
+<h2>Module 2 — Text Preprocessing</h2>
+<p>This module converts the free-text field (typically
+<code>abstract</code>) into a <strong>Document-Term Matrix
+(DTM)</strong> ready for LDA.</p>
+<div id="options" class="section level3">
+<h3>Options</h3>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="15%" />
+<col width="57%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Text column</td>
+<td><code>abstract</code></td>
+<td>Column used as the document text</td>
+</tr>
+<tr class="even">
+<td>Document ID column</td>
+<td><code>title</code></td>
+<td>Column used as row identifier</td>
+</tr>
+<tr class="odd">
+<td>Min / Max n-gram</td>
+<td>1 / 2</td>
+<td>Unigrams and bigrams by default</td>
+</tr>
+<tr class="even">
+<td>Stemming (Porter)</td>
+<td>Enabled</td>
+<td>Reduces words to their root form</td>
+</tr>
+<tr class="odd">
+<td>Remove numbers</td>
+<td>Enabled</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Remove punctuation</td>
+<td>Enabled</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Sparse filter</td>
+<td>0.995</td>
+<td>Removes terms appearing in fewer than 0.5 % of docs</td>
+</tr>
+<tr class="even">
+<td>Custom stopwords</td>
+<td>—</td>
+<td>Upload an <code>.xlsx</code> file with one word per row</td>
+</tr>
+<tr class="odd">
+<td>CPUs</td>
+<td><code>max - 1</code></td>
+<td>Parallel cores for DTM construction</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="output" class="section level3">
+<h3>Output</h3>
+<p>After clicking <strong>“Run Preprocessing”</strong>:</p>
+<ul>
+<li><strong>DTM Summary</strong> tab shows the raw and post-filter
+matrix dimensions.</li>
+<li><strong>Term Frequency</strong> tab presents an interactive table
+(<code>tf_mat</code>) with term, document frequency, and inverse
+document frequency columns.</li>
+<li>The filtered DTM (<code>.rds</code>) and term-frequency table
+(<code>.xlsx</code>) can be downloaded for external use.</li>
+</ul>
+</div>
+<div id="technical-details" class="section level3">
+<h3>Technical details</h3>
+<p>The preprocessing pipeline uses:</p>
+<ol style="list-style-type: decimal">
+<li><code>textmineR::CreateDtm()</code> for tokenisation, n-gram
+construction, and stopword removal.</li>
+<li><code>SnowballC::wordStem()</code> (Porter algorithm) for optional
+stemming.</li>
+<li><code>quanteda</code> + <code>tm::removeSparseTerms()</code> for
+sparsity filtering.</li>
+<li>Conversion back to a <code>Matrix::dgCMatrix</code> for
+memory-efficient LDA fitting.</li>
+</ol>
+<hr />
+</div>
+</div>
+<div id="module-3-lda-inference-selecting-k" class="section level2">
+<h2>Module 3 — LDA Inference (Selecting K)</h2>
+<p>Choosing the right number of topics <strong>K</strong> is a critical
+step. This module fits multiple LDA models over a user-defined range of
+K values and evaluates each using <strong>mean topic coherence</strong>
+— a measure of the semantic interpretability of topics.</p>
+<div id="settings" class="section level3">
+<h3>Settings</h3>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="12%" />
+<col width="69%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>k start</td>
+<td>5</td>
+<td>Minimum number of topics to test</td>
+</tr>
+<tr class="even">
+<td>k end</td>
+<td>40</td>
+<td>Maximum number of topics to test</td>
+</tr>
+<tr class="odd">
+<td>k step</td>
+<td>1</td>
+<td>Increment between successive K values</td>
+</tr>
+<tr class="even">
+<td>Iterations</td>
+<td>500</td>
+<td>Gibbs sampler iterations per model</td>
+</tr>
+<tr class="odd">
+<td>Burn-in</td>
+<td>50</td>
+<td>Initial iterations discarded before sampling</td>
+</tr>
+<tr class="even">
+<td>Alpha</td>
+<td>0.1</td>
+<td>Document-topic concentration (Dirichlet prior)</td>
+</tr>
+<tr class="odd">
+<td>CPUs</td>
+<td>max − 1</td>
+<td>Parallel workers (one model per core)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="interpreting-results" class="section level3">
+<h3>Interpreting results</h3>
+<ul>
+<li>The <strong>Coherence Table</strong> tab lists coherence score for
+every K tested.</li>
+<li>The <strong>Coherence Plot</strong> tab shows the curve; the peak
+indicates the optimal K.</li>
+</ul>
+<p>A higher coherence score means that the top terms of a topic tend to
+co-occur frequently in the same documents, producing more semantically
+coherent topics.</p>
+<p>The plot is fully customisable (colors, themes, font sizes) and can
+be exported in PNG, TIFF, JPEG, or PDF formats.</p>
+</div>
+<div id="recommendation" class="section level3">
+<h3>Recommendation</h3>
+<p>If the coherence curve has multiple local maxima, prefer the smaller
+K for a more parsimonious model, unless domain knowledge justifies a
+larger number of topics.</p>
+<hr />
+</div>
+</div>
+<div id="module-4-final-lda-model-training" class="section level2">
+<h2>Module 4 — Final LDA Model Training</h2>
+<p>Once an optimal K is identified, this module trains the definitive
+LDA model. The <strong>K field is pre-populated</strong> with the value
+selected in Module 3, though it can be overridden.</p>
+<div id="parameters" class="section level3">
+<h3>Parameters</h3>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="67%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>K</td>
+<td>(from inference)</td>
+<td>Number of topics</td>
+</tr>
+<tr class="even">
+<td>Iterations</td>
+<td>500</td>
+<td>Gibbs sampler iterations</td>
+</tr>
+<tr class="odd">
+<td>Burn-in</td>
+<td>50</td>
+<td>Warm-up iterations</td>
+</tr>
+<tr class="even">
+<td>Alpha</td>
+<td>50 / K</td>
+<td>Document-topic prior (auto-scaled)</td>
+</tr>
+<tr class="odd">
+<td>Beta</td>
+<td>0.05</td>
+<td>Topic-term prior</td>
+</tr>
+<tr class="even">
+<td>Optimize Alpha</td>
+<td>Yes</td>
+<td>Whether to update alpha during sampling</td>
+</tr>
+<tr class="odd">
+<td>Metrics</td>
+<td>Likelihood, Coherence</td>
+<td>Optional: also compute R²</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="results-tabs" class="section level3">
+<h3>Results tabs</h3>
+<p>After clicking <strong>“Train Final LDA Model”</strong>:</p>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="65%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tab</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Model Evaluation Metrics</td>
+<td>K, iterations, α, β, mean coherence, log-likelihood</td>
+</tr>
+<tr class="even">
+<td>Top Terms Matrix</td>
+<td>Top M terms per topic (configurable, default M = 20)</td>
+</tr>
+<tr class="odd">
+<td>Document Topic Assignment</td>
+<td>Dominant topic for each document</td>
+</tr>
+<tr class="even">
+<td>Top Documents per Topic</td>
+<td>Top M documents per topic ranked by γ weight</td>
+</tr>
+<tr class="odd">
+<td>Topic-Term Weights (Beta)</td>
+<td>Full β matrix in tidy long format</td>
+</tr>
+<tr class="even">
+<td>Document-Topic Weights (Gamma)</td>
+<td>Full γ matrix in tidy long format</td>
+</tr>
+<tr class="odd">
+<td>Topic Word Cloud</td>
+<td>Interactive word cloud per topic</td>
+</tr>
+</tbody>
+</table>
+<div id="understanding-beta-β-and-gamma-γ" class="section level4">
+<h4>Understanding Beta (β) and Gamma (γ)</h4>
+<ul>
+<li><p><strong>β (phi matrix)</strong>: probability of each term given a
+topic. A high β value for a term in a topic means that term is strongly
+associated with that topic.</p></li>
+<li><p><strong>γ (theta matrix)</strong>: probability of each topic
+given a document. A high γ value means the document strongly belongs to
+that topic.</p></li>
+</ul>
+</div>
+<div id="word-clouds" class="section level4">
+<h4>Word Clouds</h4>
+<p>Select any topic from the dropdown, set the maximum number of words,
+choose a color palette (from <code>RColorBrewer</code>), and click
+<strong>“Generate Word Cloud”</strong>. The word size is proportional to
+the term’s β weight. Word clouds can be exported in PNG, JPEG, PDF, or
+TIFF format.</p>
+</div>
+</div>
+<div id="downloads" class="section level3">
+<h3>Downloads</h3>
+<p>All result tables are available as <code>.xlsx</code> files. The full
+trained model object can be saved as an <code>.rds</code> file:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Load a previously saved model</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>lda_model <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;lda_final_model.rds&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Inspect the phi (topic-term) matrix</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">head</span>(lda_model<span class="sc">$</span>phi[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Inspect the theta (document-topic) matrix</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="fu">head</span>(lda_model<span class="sc">$</span>theta[, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="module-5-topic-trend-analysis" class="section level2">
+<h2>Module 5 — Topic Trend Analysis</h2>
+<p>This module examines how topics have evolved over time by fitting a
+<strong>simple linear regression</strong> of mean topic intensity (mean
+γ) against publication year, separately for each topic.</p>
+<div id="classification" class="section level3">
+<h3>Classification</h3>
+<p>Each topic is assigned one of three trend categories:</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="60%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>Criterion</th>
+<th>Plot color</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>HOT (Increasing)</strong></td>
+<td>Slope &gt; 0, p-value &lt; threshold</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td><strong>COLD (Decreasing)</strong></td>
+<td>Slope &lt; 0, p-value &lt; threshold</td>
+<td>Light blue</td>
+</tr>
+<tr class="odd">
+<td><strong>EQUAL (Stable)</strong></td>
+<td>p-value ≥ threshold (non-significant slope)</td>
+<td>Grey</td>
+</tr>
+</tbody>
+</table>
+<p>The default significance threshold is <strong>p = 0.05</strong>,
+adjustable via the P-Value Threshold input.</p>
+</div>
+<div id="how-to-use-1" class="section level3">
+<h3>How to use</h3>
+<ol style="list-style-type: decimal">
+<li>After training the LDA model in Module 4, navigate to <strong>Trend
+Analysis</strong>.</li>
+<li>Set the p-value threshold (default: 0.05).</li>
+<li>Click <strong>“Run Trend Analysis”</strong>.</li>
+<li>Select any topic from the dropdown to visualise its trend.</li>
+</ol>
+</div>
+<div id="results-tabs-1" class="section level3">
+<h3>Results tabs</h3>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tab</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Topic-Year Data</td>
+<td>Raw yearly mean γ per topic</td>
+</tr>
+<tr class="even">
+<td>Regression Results</td>
+<td>Slope estimate and p-value for each topic</td>
+</tr>
+<tr class="odd">
+<td>Topic Trend Plot</td>
+<td>Scatter plot with fitted regression line, color-coded</td>
+</tr>
+</tbody>
+</table>
+<p>The trend plot is fully customisable and exportable in multiple
+formats.</p>
+</div>
+<div id="downloads-1" class="section level3">
+<h3>Downloads</h3>
+<ul>
+<li><strong>Regression Results (Excel)</strong>: full table of slopes,
+p-values, and trend classifications for all topics.</li>
+<li><strong>Topic-Year Data (Excel)</strong>: the source data used for
+the regression.</li>
+<li><strong>Plot</strong>: current trend plot exported in the chosen
+format.</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="tips-and-best-practices" class="section level2">
+<h2>Tips and Best Practices</h2>
+<p><strong>Data quality</strong></p>
+<ul>
+<li>Remove records with empty abstracts before importing; these produce
+empty document vectors that inflate DTM sparsity.</li>
+<li>Ensure year information is numeric and complete for valid trend
+analysis.</li>
+</ul>
+<p><strong>Preprocessing</strong></p>
+<ul>
+<li>Start with the default sparse filter (0.995) and increase it if the
+DTM is very large.</li>
+<li>Upload a custom stopword list (<code>.xlsx</code>, one term per row)
+to remove domain-specific noise (e.g. “study”, “result”, “method”).</li>
+</ul>
+<p><strong>Choosing K</strong></p>
+<ul>
+<li>Inspect the coherence curve carefully; a broad plateau often
+indicates a range of valid K values.</li>
+<li>Validate the final model qualitatively by reading the top terms of
+each topic and checking they form coherent themes.</li>
+</ul>
+<p><strong>Reproducibility</strong></p>
+<ul>
+<li>Download the merged dataset after Module 1 so future sessions can
+start directly from the <strong>Load Integrated Excel File</strong>
+option.</li>
+<li>Save the trained model (<code>.rds</code>) to avoid retraining for
+downstream analyses.</li>
+</ul>
+<hr />
+</div>
+<div id="session-information" class="section level2">
+<h2>Session Information</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<hr />
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ul>
+<li><p>De la Hoz-M., J.; Fernandez-Gomez, M. J.; Mendes, S. (2021).
+LDAShiny: An R Package for Exploratory Review of Scientific Literature
+Based on a Bayesian Probabilistic Model and Machine Learning Tools.
+<em>Mathematics</em>, 9(14), 1671. <a href="https://doi.org/10.3390/math9141671" class="uri">https://doi.org/10.3390/math9141671</a></p></li>
+<li><p>Blei, D. M., Ng, A. Y., &amp; Jordan, M. I. (2003). Latent
+Dirichlet Allocation. <em>Journal of Machine Learning Research</em>, 3,
+993–1022.</p></li>
+<li><p>Chang, W., Cheng, J., Allaire, J., et al. (2023). <em>shiny: Web
+Application Framework for R</em>. R package version 1.7.5. <a href="https://CRAN.R-project.org/package=shiny" class="uri">https://CRAN.R-project.org/package=shiny</a></p></li>
+<li><p>Jones, T. (2019). <em>textmineR: Functions for Text Mining and
+Topic Modeling</em>. R package. <a href="https://CRAN.R-project.org/package=textmineR" class="uri">https://CRAN.R-project.org/package=textmineR</a></p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

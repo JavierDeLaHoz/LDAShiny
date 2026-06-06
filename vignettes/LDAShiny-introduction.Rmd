@@ -1,0 +1,397 @@
+---
+title: "Introduction to LDAShiny: Bibliometric Topic Modeling"
+author: "Javier De La Hoz Maestre, María José Fernandez-Gomez, Susana Mendes"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to LDAShiny: Bibliometric Topic Modeling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  eval      = FALSE
+)
+```
+
+## Overview
+
+**LDAShiny** is an interactive R package built with the
+[Shiny](https://shiny.posit.co/) framework and the
+[golem](https://thinkr-open.github.io/golem/) architecture. It provides a
+complete, graphical workflow for **Latent Dirichlet Allocation (LDA) topic
+modeling** applied to bibliometric data exported from
+[Scopus](https://www.scopus.com/) and
+[Web of Science (WoS)](https://clarivate.com/products/scientific-and-academic-research/research-discovery-and-workflow-solutions/webofscience-platform/).
+
+The package was developed by the **GEMC Research Group** (Grupo de Estadística
+y Métodos Cuantitativos) at Universidad del Magdalena, Colombia.
+
+### Citation
+
+If you use LDAShiny in your research, please cite:
+
+> De la Hoz-M., J.; Fernandez-Gomez, M. J.; Mendes, S. (2021). *LDAShiny: An
+> R Package for Exploratory Review of Scientific Literature Based on a Bayesian
+> Probabilistic Model and Machine Learning Tools.* Mathematics, 9(14), 1671.
+> DOI: [10.3390/math9141671](https://doi.org/10.3390/math9141671)
+
+---
+
+## Installation
+
+Install the development version from GitHub:
+
+```{r install-github}
+# install.packages("remotes")
+remotes::install_github("your_user/LDAShiny")
+```
+
+Or, once published on CRAN:
+
+```{r install-cran}
+install.packages("LDAShiny")
+```
+
+---
+
+## Launching the Application
+
+Start the interactive dashboard with a single call:
+
+```{r launch}
+library(LDAShiny)
+run_LDAShiny()
+```
+
+By default, the application accepts file uploads up to **500 MB**. You can
+adjust this limit:
+
+```{r launch-custom}
+run_LDAShiny(max_upload_mb = 1000)
+```
+
+The dashboard opens in your default web browser and presents five sequential
+modules in the left-hand sidebar, each building on the output of the previous
+one.
+
+---
+
+## Workflow Overview
+
+The full analysis pipeline consists of five modules:
+
+```
+ ┌──────────────────────┐
+ │  1. Data Import       │  Upload Scopus CSV + WoS TXT → merged data.frame
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  2. Text Preprocessing│  Tokenise · Stopwords · Stemming · DTM
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  3. Inference (K)     │  Run LDA for k_min..k_max → coherence curve
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  4. Final LDA Model   │  Train model at optimal K → β, γ, word clouds
+ └──────────┬───────────┘
+            │
+ ┌──────────▼───────────┐
+ │  5. Trend Analysis    │  Linear regression of topic intensity over time
+ └──────────────────────┘
+```
+
+---
+
+## Module 1 — Data Import
+
+### Supported formats
+
+| Source          | Format        | Notes                              |
+|-----------------|---------------|------------------------------------|
+| Scopus          | `.csv`        | Standard Scopus export             |
+| Web of Science  | `.txt`        | Plain-text tagged format           |
+| Integrated file | `.xlsx`       | Previously exported merged dataset |
+
+### How to use
+
+1. Select **"Merge Scopus + Web of Science"** from the action picker.
+2. Upload one or more Scopus CSV files and one or more WoS TXT files.
+3. Click **"Process and Merge"**.
+
+The module:
+
+- Standardises column names across both sources (`doi`, `title`, `year`,
+  `Journal`, `abstract`, `database`).
+- Deduplicates records by DOI (case-insensitive). Records without a DOI are
+  deduplicated by exact row content.
+- Displays a summary table, a missing-values report, and a preview of the
+  top 10 records.
+- Allows customisable bar or lollipop charts of journal and year distributions,
+  with full export control (PNG, TIFF, JPEG, PDF).
+
+The merged dataset can be downloaded as an `.xlsx` file for reuse via the
+**Load Integrated Excel File** option in future sessions.
+
+### Internal helper functions
+
+Two internal functions handle the parsing and standardisation steps:
+
+- `parse_wos(path)` — reads a WoS plain-text export and returns a `data.frame`
+  with columns `doi`, `title`, `year`, `Journal`, `abstract`, `database`.
+  Missing fields (e.g. absent DOI) are set to `NA`.
+
+- `standardize_scopus(df)` — maps Scopus column names to the shared schema.
+  Any missing column is filled with `NA`.
+
+---
+
+## Module 2 — Text Preprocessing
+
+This module converts the free-text field (typically `abstract`) into a
+**Document-Term Matrix (DTM)** ready for LDA.
+
+### Options
+
+| Option                   | Default       | Description                                           |
+|--------------------------|---------------|-------------------------------------------------------|
+| Text column              | `abstract`    | Column used as the document text                      |
+| Document ID column       | `title`       | Column used as row identifier                         |
+| Min / Max n-gram         | 1 / 2         | Unigrams and bigrams by default                       |
+| Stemming (Porter)        | Enabled       | Reduces words to their root form                      |
+| Remove numbers           | Enabled       |                                                       |
+| Remove punctuation       | Enabled       |                                                       |
+| Sparse filter            | 0.995         | Removes terms appearing in fewer than 0.5 % of docs  |
+| Custom stopwords         | —             | Upload an `.xlsx` file with one word per row          |
+| CPUs                     | `max - 1`     | Parallel cores for DTM construction                   |
+
+### Output
+
+After clicking **"Run Preprocessing"**:
+
+- **DTM Summary** tab shows the raw and post-filter matrix dimensions.
+- **Term Frequency** tab presents an interactive table (`tf_mat`) with term,
+  document frequency, and inverse document frequency columns.
+- The filtered DTM (`.rds`) and term-frequency table (`.xlsx`) can be
+  downloaded for external use.
+
+### Technical details
+
+The preprocessing pipeline uses:
+
+1. `textmineR::CreateDtm()` for tokenisation, n-gram construction, and
+   stopword removal.
+2. `SnowballC::wordStem()` (Porter algorithm) for optional stemming.
+3. `quanteda` + `tm::removeSparseTerms()` for sparsity filtering.
+4. Conversion back to a `Matrix::dgCMatrix` for memory-efficient LDA fitting.
+
+---
+
+## Module 3 — LDA Inference (Selecting K)
+
+Choosing the right number of topics **K** is a critical step. This module fits
+multiple LDA models over a user-defined range of K values and evaluates each
+using **mean topic coherence** — a measure of the semantic interpretability of
+topics.
+
+### Settings
+
+| Parameter   | Default | Description                                       |
+|-------------|---------|---------------------------------------------------|
+| k start     | 5       | Minimum number of topics to test                  |
+| k end       | 40      | Maximum number of topics to test                  |
+| k step      | 1       | Increment between successive K values             |
+| Iterations  | 500     | Gibbs sampler iterations per model                |
+| Burn-in     | 50      | Initial iterations discarded before sampling      |
+| Alpha       | 0.1     | Document-topic concentration (Dirichlet prior)    |
+| CPUs        | max − 1 | Parallel workers (one model per core)             |
+
+### Interpreting results
+
+- The **Coherence Table** tab lists coherence score for every K tested.
+- The **Coherence Plot** tab shows the curve; the peak indicates the optimal K.
+
+A higher coherence score means that the top terms of a topic tend to co-occur
+frequently in the same documents, producing more semantically coherent topics.
+
+The plot is fully customisable (colors, themes, font sizes) and can be exported
+in PNG, TIFF, JPEG, or PDF formats.
+
+### Recommendation
+
+If the coherence curve has multiple local maxima, prefer the smaller K for a
+more parsimonious model, unless domain knowledge justifies a larger number of
+topics.
+
+---
+
+## Module 4 — Final LDA Model Training
+
+Once an optimal K is identified, this module trains the definitive LDA model.
+The **K field is pre-populated** with the value selected in Module 3, though it
+can be overridden.
+
+### Parameters
+
+| Parameter       | Default | Description                                         |
+|-----------------|---------|-----------------------------------------------------|
+| K               | (from inference) | Number of topics                           |
+| Iterations      | 500     | Gibbs sampler iterations                            |
+| Burn-in         | 50      | Warm-up iterations                                  |
+| Alpha           | 50 / K  | Document-topic prior (auto-scaled)                  |
+| Beta            | 0.05    | Topic-term prior                                    |
+| Optimize Alpha  | Yes     | Whether to update alpha during sampling             |
+| Metrics         | Likelihood, Coherence | Optional: also compute R²           |
+
+### Results tabs
+
+After clicking **"Train Final LDA Model"**:
+
+| Tab                          | Content                                                |
+|------------------------------|--------------------------------------------------------|
+| Model Evaluation Metrics     | K, iterations, α, β, mean coherence, log-likelihood   |
+| Top Terms Matrix             | Top M terms per topic (configurable, default M = 20)  |
+| Document Topic Assignment    | Dominant topic for each document                       |
+| Top Documents per Topic      | Top M documents per topic ranked by γ weight           |
+| Topic-Term Weights (Beta)    | Full β matrix in tidy long format                      |
+| Document-Topic Weights (Gamma)| Full γ matrix in tidy long format                    |
+| Topic Word Cloud             | Interactive word cloud per topic                       |
+
+#### Understanding Beta (β) and Gamma (γ)
+
+- **β (phi matrix)**: probability of each term given a topic.
+  A high β value for a term in a topic means that term is strongly associated
+  with that topic.
+
+- **γ (theta matrix)**: probability of each topic given a document.
+  A high γ value means the document strongly belongs to that topic.
+
+#### Word Clouds
+
+Select any topic from the dropdown, set the maximum number of words, choose a
+color palette (from `RColorBrewer`), and click **"Generate Word Cloud"**. The
+word size is proportional to the term's β weight. Word clouds can be exported
+in PNG, JPEG, PDF, or TIFF format.
+
+### Downloads
+
+All result tables are available as `.xlsx` files. The full trained model object
+can be saved as an `.rds` file:
+
+```{r load-model}
+# Load a previously saved model
+lda_model <- readRDS("lda_final_model.rds")
+
+# Inspect the phi (topic-term) matrix
+head(lda_model$phi[, 1:5])
+
+# Inspect the theta (document-topic) matrix
+head(lda_model$theta[, 1:5])
+```
+
+---
+
+## Module 5 — Topic Trend Analysis
+
+This module examines how topics have evolved over time by fitting a **simple
+linear regression** of mean topic intensity (mean γ) against publication year,
+separately for each topic.
+
+### Classification
+
+Each topic is assigned one of three trend categories:
+
+| Category            | Criterion                                        | Plot color |
+|---------------------|--------------------------------------------------|------------|
+| **HOT (Increasing)**  | Slope > 0, p-value < threshold               | Red        |
+| **COLD (Decreasing)** | Slope < 0, p-value < threshold               | Light blue |
+| **EQUAL (Stable)**    | p-value ≥ threshold (non-significant slope)  | Grey       |
+
+The default significance threshold is **p = 0.05**, adjustable via the
+P-Value Threshold input.
+
+### How to use
+
+1. After training the LDA model in Module 4, navigate to **Trend Analysis**.
+2. Set the p-value threshold (default: 0.05).
+3. Click **"Run Trend Analysis"**.
+4. Select any topic from the dropdown to visualise its trend.
+
+### Results tabs
+
+| Tab                 | Content                                               |
+|---------------------|-------------------------------------------------------|
+| Topic-Year Data     | Raw yearly mean γ per topic                           |
+| Regression Results  | Slope estimate and p-value for each topic             |
+| Topic Trend Plot    | Scatter plot with fitted regression line, color-coded |
+
+The trend plot is fully customisable and exportable in multiple formats.
+
+### Downloads
+
+- **Regression Results (Excel)**: full table of slopes, p-values, and trend
+  classifications for all topics.
+- **Topic-Year Data (Excel)**: the source data used for the regression.
+- **Plot**: current trend plot exported in the chosen format.
+
+---
+
+## Tips and Best Practices
+
+**Data quality**
+
+- Remove records with empty abstracts before importing; these produce empty
+  document vectors that inflate DTM sparsity.
+- Ensure year information is numeric and complete for valid trend analysis.
+
+**Preprocessing**
+
+- Start with the default sparse filter (0.995) and increase it if the DTM is
+  very large.
+- Upload a custom stopword list (`.xlsx`, one term per row) to remove
+  domain-specific noise (e.g. "study", "result", "method").
+
+**Choosing K**
+
+- Inspect the coherence curve carefully; a broad plateau often indicates a
+  range of valid K values.
+- Validate the final model qualitatively by reading the top terms of each
+  topic and checking they form coherent themes.
+
+**Reproducibility**
+
+- Download the merged dataset after Module 1 so future sessions can start
+  directly from the **Load Integrated Excel File** option.
+- Save the trained model (`.rds`) to avoid retraining for downstream analyses.
+
+---
+
+## Session Information
+
+```{r session-info}
+sessionInfo()
+```
+
+---
+
+## References
+
+- De la Hoz-M., J.; Fernandez-Gomez, M. J.; Mendes, S. (2021). LDAShiny: An
+  R Package for Exploratory Review of Scientific Literature Based on a Bayesian
+  Probabilistic Model and Machine Learning Tools. *Mathematics*, 9(14), 1671.
+  <https://doi.org/10.3390/math9141671>
+
+- Blei, D. M., Ng, A. Y., & Jordan, M. I. (2003). Latent Dirichlet Allocation.
+  *Journal of Machine Learning Research*, 3, 993–1022.
+
+- Chang, W., Cheng, J., Allaire, J., et al. (2023). *shiny: Web Application
+  Framework for R*. R package version 1.7.5.
+  <https://CRAN.R-project.org/package=shiny>
+
+- Jones, T. (2019). *textmineR: Functions for Text Mining and Topic Modeling*.
+  R package. <https://CRAN.R-project.org/package=textmineR>
